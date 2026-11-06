@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luyện Tập 🎀</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#ffe5f0,#eee6ff,#dcf8ef);color:#65536e;min-height:100vh}
+header{text-align:center;padding:38px 15px 25px}
+header h1{font-size:42px;color:#d77da9;margin:0}
+header p{color:#927c9e}
+.container{max-width:950px;margin:auto;padding:15px}
+.panel{background:#ffffffd9;padding:22px;border-radius:24px;box-shadow:0 8px 25px #bba3c533;margin-bottom:25px}
+h2{color:#bd82aa}
+input{width:100%;padding:13px;margin:7px 0;border:2px solid #f2d8e9;border-radius:13px;background:#fffaff;font-size:15px;outline:none}
+input:focus{border-color:#d99ac0}
+button{border:0;border-radius:13px;padding:12px 20px;background:#e9b7d3;color:#754d69;font-weight:bold;cursor:pointer}
+button:hover{transform:translateY(-2px)}
+.add{width:100%;margin-top:8px}
+.search{margin-bottom:18px}
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:17px}
+.game{background:#fff;border-radius:20px;padding:18px;text-align:center;box-shadow:0 5px 16px #bba3c522;border:2px solid #f8e5f0;overflow-wrap:anywhere}
+.emoji{font-size:38px}
+.game h3{color:#bd82aa}
+.game a{display:inline-block;text-decoration:none;background:#dff4ed;color:#568b78;padding:9px 18px;border-radius:12px;margin:5px}
+.delete{background:#ffe1e6;color:#bc7588;margin:5px}
+.empty{text-align:center;padding:35px;color:#a48da9;grid-column:1/-1}
+footer{text-align:center;padding:35px;color:#a48da9}
+</style>
+</head>
+<body>
+<header><h1>🎀 Luyện Tập 🎀</h1><p>Góc nhỏ lưu giữ những tựa game yêu thích của bạn ♡</p></header>
+<div class="container">
+<section class="panel">
+<h2>🌸 Thêm tựa game mới</h2>
+<input id="gameName" placeholder="Tên game của bạn...">
+<input id="gameLink" placeholder="Đường dẫn game (không bắt buộc)">
+<button class="add" onclick="addGame()">＋ Thêm game vào bộ sưu tập</button>
+</section>
+<section class="panel">
+<h2>🧸 Bộ sưu tập game</h2>
+<input class="search" id="search" placeholder="🔍 Tìm tựa game..." oninput="render()">
+<div class="games" id="games"></div>
+</section>
+</div>
+<footer>Made with ♡ dành riêng cho bạn</footer>
+<script>
+let gameList=JSON.parse(localStorage.getItem("myGames")||"[]");
+function save(){localStorage.setItem("myGames",JSON.stringify(gameList))}
+function addGame(){
+ const name=document.getElementById("gameName").value.trim();
+ const link=document.getElementById("gameLink").value.trim();
+ if(!name){alert("Bạn hãy nhập tên game nhé! 🌷");return}
+ if(link&&!/^https?:\/\//i.test(link)){alert("Đường dẫn cần bắt đầu bằng http:// hoặc https://");return}
+ gameList.push({id:Date.now()+Math.random(),name,link});save();
+ document.getElementById("gameName").value="";document.getElementById("gameLink").value="";render()
+}
+function deleteGame(id){if(confirm("Bạn có chắc muốn xóa game này không?")){gameList=gameList.filter(g=>g.id!==id);save();render()}}
+function render(){
+ const area=document.getElementById("games"),keyword=document.getElementById("search").value.toLowerCase();
+ const filtered=gameList.filter(g=>g.name.toLowerCase().includes(keyword));area.innerHTML="";
+ if(!filtered.length){area.innerHTML='<div class="empty">🌷 Chưa có game nào ở đây!<br>Hãy thêm tựa game yêu thích của bạn nhé ♡</div>';return}
+ filtered.forEach(g=>{
+  const card=document.createElement("div");card.className="game";
+  const emoji=document.createElement("div");emoji.className="emoji";emoji.textContent="🎮";
+  const title=document.createElement("h3");title.textContent=g.name;card.append(emoji,title);
+  if(g.link){const a=document.createElement("a");a.textContent="Chơi game ♡";a.href=g.link;a.target="_blank";a.rel="noopener noreferrer";card.appendChild(a)}
+  const del=document.createElement("button");del.className="delete";del.textContent="🗑 Xóa";del.onclick=()=>deleteGame(g.id);card.appendChild(del);area.appendChild(card)
+ })
+}
+render();
+</script>
+</body>
+</html>
